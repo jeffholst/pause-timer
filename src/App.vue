@@ -9,6 +9,9 @@
 </template>
 
 <script>
+import NoSleep from 'nosleep.js';
+
+const noSleep = new NoSleep();
 
 const audioElement = document.createElement('audio');
 audioElement.setAttribute('src', 'assets/');
@@ -20,6 +23,7 @@ export default {
       if (this.timerStarted) {
         this.timerStarted = false;
         this.stopTimer();
+        noSleep.disable();
       } else {
         if (this.timer) {
           window.clearInterval(this.timer);
@@ -27,6 +31,7 @@ export default {
         }
 
         this.startCountdown();
+        noSleep.enable();
       }
     },
     startCountdown() {
