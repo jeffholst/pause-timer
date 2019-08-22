@@ -12,9 +12,8 @@
 import NoSleep from 'nosleep.js';
 
 const noSleep = new NoSleep();
-
-const audioElement = document.createElement('audio');
-audioElement.setAttribute('src', 'assets/');
+const beep = new Audio(require('./assets/beep.wav')); // eslint-disable-line global-require
+const start = new Audio(require('./assets/start.mp3')); // eslint-disable-line global-require
 
 export default {
   name: 'App',
@@ -63,7 +62,10 @@ export default {
         this.timer = null;
         this.countdownStarted = false;
         this.timerStarted = true;
+        start.play();
         this.startTimer();
+      } else {
+        beep.play();
       }
     },
     updateTimer() {
