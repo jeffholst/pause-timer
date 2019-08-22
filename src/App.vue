@@ -1,10 +1,17 @@
 <template>
   <v-app>
-    <p class="text-center display-4" >{{timerDisplay}}</p>
+    <p class="text-center display-4"
+      v-bind:class="{'red--text': !timerStarted}"
+    >
+      {{timerDisplay}}
+    </p>
   </v-app>
 </template>
 
 <script>
+
+const audioElement = document.createElement('audio');
+audioElement.setAttribute('src', 'assets/');
 
 export default {
   name: 'App',
@@ -14,19 +21,49 @@ export default {
         this.timerStarted = false;
         this.stopTimer();
       } else {
-        this.timerStarted = true;
+        if (this.timer) {
+          window.clearInterval(this.timer);
+          this.timer = null;
+        }
+
+        this.startCountdown();
+      }
+    },
+    startCountdown() {
+      if (this.countdown > 0) {
+        this.countdownStarted = true;
+        this.countdownSeconds = this.countdown;
+        this.updateCountdown();
+        this.timer = setInterval(this.updateCountdown, 1000);
+      } else {
         this.startTimer();
       }
     },
     startTimer() {
+      this.timerStarted = true;
+      this.updateTimer();
       this.timer = setInterval(this.updateTimer, 1000);
     },
     stopTimer() {
-      clearInterval(this.timer);
+      window.clearInterval(this.timer);
+      this.timer = null;
+      this.totalSeconds -= 1;
+    },
+    updateCountdown() {
+      this.timerDisplay = this.countdownSeconds;
+      this.countdownSeconds -= 1;
+
+      if (this.countdownSeconds < 0) {
+        window.clearInterval(this.timer);
+        this.timer = null;
+        this.countdownStarted = false;
+        this.timerStarted = true;
+        this.startTimer();
+      }
     },
     updateTimer() {
-      this.totalSeconds += 1;
       this.timerDisplay = `${this.GetHours()}:${this.GetMinutes()}:${this.GetSeconds()}`;
+      this.totalSeconds += 1;
     },
     GetSeconds() {
       /*
@@ -50,15 +87,17 @@ export default {
       return hrs >= 10 ? hrs : `0${hrs}`;
     },
   },
-  created: function () {
-    const self = this;
-    document.body.addEventListener('click', () => { self.mouseClicked(); }, true);
+  mounted() {
+    document.body.addEventListener('click', () => { this.mouseClicked(); }, true);
   },
   data: () => ({
     timer: 0,
     totalSeconds: 0,
     timerDisplay: '00:00:00',
     timerStarted: false,
+    countdown: 3,
+    countdownSeconds: 0,
+    coutdownStarted: false,
   }),
 };
 </script>
