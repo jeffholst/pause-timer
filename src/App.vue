@@ -1,10 +1,54 @@
 <template>
   <v-app>
-    <p class="text-center display-4"
-      v-bind:class="{'red--text': !timerStarted}"
+
+  <!-- Sizes your content based upon application components -->
+    <v-content id='mainContainer'>
+
+      <!-- Provides the application the proper gutter -->
+      <v-container fluid>
+
+        <p class="text-center display-4 font-weight-black"
+          v-bind:class="{'red--text': !timerStarted}"
+        >
+          {{timerDisplay}}
+        </p>
+
+        <v-row justify="center">
+          <v-dialog v-model="settings" persistent max-width="300px">
+            <v-card>
+              <v-card-title>
+                <span class="headline">Settings</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-switch
+                        v-model="soundOn"
+                        :label="`Sound: ${soundOn.toString()}`"
+                      ></v-switch>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <div class="flex-grow-1"></div>
+                <v-btn color="blue darken-1" text @click="settings = false">Close</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-row>
+      </v-container>
+    </v-content>
+    <v-bottom-navigation
+    color="deep-purple accent-4"
     >
-      {{timerDisplay}}
-    </p>
+    <v-btn @click="settings = true">
+      <span>Settings</span>
+      <v-icon>mdi-settings</v-icon>
+    </v-btn>
+
+  </v-bottom-navigation>
   </v-app>
 </template>
 
@@ -62,9 +106,9 @@ export default {
         this.timer = null;
         this.countdownStarted = false;
         this.timerStarted = true;
-        start.play();
+        if (this.soundOn) { start.play(); }
         this.startTimer();
-      } else {
+      } else if (this.soundOn) {
         beep.play();
       }
     },
@@ -95,7 +139,11 @@ export default {
     },
   },
   mounted() {
-    document.body.addEventListener('click', () => { this.mouseClicked(); }, true);
+    const self = this;
+
+    document.getElementById('mainContainer').addEventListener('click', () => {
+      self.mouseClicked();
+    });
   },
   data: () => ({
     timer: 0,
@@ -105,6 +153,9 @@ export default {
     countdown: 3,
     countdownSeconds: 0,
     coutdownStarted: false,
+    settings: false,
+    soundOn: false,
+    mini: true,
   }),
 };
 </script>
