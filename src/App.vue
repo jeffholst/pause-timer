@@ -7,8 +7,12 @@
       <!-- Provides the application the proper gutter -->
       <v-container fluid>
 
-        <p class="text-center display-4 font-weight-black"
-          v-bind:class="{'red--text': !timerStarted}"
+        <p class="text-center font-weight-black"
+          v-bind:class="[{ 'red--text': !timerStarted},
+            {'display-4': displaySizeSelected == '4'},
+            {'display-3': displaySizeSelected == '3'},
+            {'display-2': displaySizeSelected == '2'},
+            ]"
         >
           {{timerDisplay}}
         </p>
@@ -35,6 +39,16 @@
                         v-model="countdownSelected"
                         :items='countdownItems'
                         label='Countdown Seconds'
+                        @change="countdown = countdownSelected"
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-select
+                        v-model="displaySizeSelected"
+                        :items='displaySizeItems'
+                        label='Display Size'
                         @change="countdown = countdownSelected"
                       ></v-select>
                     </v-col>
@@ -148,9 +162,10 @@ export default {
       return hrs >= 10 ? hrs : `0${hrs}`;
     },
     saveSettings() {
-      const obj = { sound: '', countdown: '' };
+      const obj = { sound: '', countdown: '', displaySize: '' };
       obj.sound = this.soundOn;
       obj.countdown = this.countdown;
+      obj.displaySize = this.displaySizeSelected;
       localStorage.pauseTimer = JSON.stringify(obj);
       this.settings = false;
     },
@@ -158,8 +173,9 @@ export default {
       if (localStorage.pauseTimer) {
         const obj = JSON.parse(localStorage.pauseTimer);
         this.soundOn = obj.sound;
-        this.countdownSelected = { text: obj.countdown, value: obj.countdown };
+        this.countdownSelected = obj.countdown;
         this.countdown = obj.countdown;
+        this.displaySizeSelected = obj.displaySize;
       }
     },
   },
@@ -182,8 +198,14 @@ export default {
     settings: false,
     soundOn: false,
     mini: true,
-    countdownSelected: { text: '3', value: '3' },
+    countdownSelected: 3,
     countdownItems: ['5', '4', '3', '2', '1', '0'],
+    displaySizeSelected: 4,
+    displaySizeItems: [
+      { text: 'Large', value: 4 },
+      { text: 'Medium', value: 3 },
+      { text: 'Small', value: 2 },
+    ],
   }),
 };
 </script>
