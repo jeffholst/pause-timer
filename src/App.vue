@@ -29,11 +29,21 @@
                       ></v-switch>
                     </v-col>
                   </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-select
+                        v-model="countdownSelected"
+                        :items='countdownItems'
+                        label='Countdown Seconds'
+                        @change="countdown = countdownSelected"
+                      ></v-select>
+                    </v-col>
+                  </v-row>
                 </v-container>
               </v-card-text>
               <v-card-actions>
                 <div class="flex-grow-1"></div>
-                <v-btn color="blue darken-1" text @click="settings = false">Close</v-btn>
+                <v-btn color="blue darken-1" text @click="saveSettings()">Close</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -113,29 +123,44 @@ export default {
       }
     },
     updateTimer() {
-      this.timerDisplay = `${this.GetHours()}:${this.GetMinutes()}:${this.GetSeconds()}`;
+      this.timerDisplay = `${this.getHours()}:${this.getMinutes()}:${this.getSeconds()}`;
       this.totalSeconds += 1;
     },
-    GetSeconds() {
+    getSeconds() {
       /*
         return seconds portion 00:00:ss
       */
       const sec = this.totalSeconds % 60;
       return sec >= 10 ? sec : `0${sec}`;
     },
-    GetMinutes() {
+    getMinutes() {
       /*
         return minutes portion 00:mm:00
       */
       const min = Math.floor((this.totalSeconds / 60) % 60);
       return min >= 10 ? min : `0${min}`;
     },
-    GetHours() {
+    getHours() {
       /*
         return hours portion hh:00:00
       */
       const hrs = Math.floor(this.totalSeconds / 60 / 60);
       return hrs >= 10 ? hrs : `0${hrs}`;
+    },
+    saveSettings() {
+      const obj = { sound: '', countdown: '' };
+      obj.sound = this.soundOn;
+      obj.countdown = this.countdown;
+      localStorage.pauseTimer = JSON.stringify(obj);
+      this.settings = false;
+    },
+    loadSettings() {
+      if (localStorage.pauseTimer) {
+        const obj = JSON.parse(localStorage.pauseTimer);
+        this.soundOn = obj.sound;
+        this.countdownSelected = { text: obj.countdown, value: obj.countdown };
+        this.countdown = obj.countdown;
+      }
     },
   },
   mounted() {
@@ -144,6 +169,7 @@ export default {
     document.getElementById('mainContainer').addEventListener('click', () => {
       self.mouseClicked();
     });
+    self.loadSettings();
   },
   data: () => ({
     timer: 0,
@@ -156,6 +182,8 @@ export default {
     settings: false,
     soundOn: false,
     mini: true,
+    countdownSelected: { text: '3', value: '3' },
+    countdownItems: ['5', '4', '3', '2', '1', '0'],
   }),
 };
 </script>
