@@ -1,4 +1,8 @@
-# pause-timer
+# Pause Timer
+
+A simple timer optimized for mobile devices.  Features include a large display, optional countdown, and easy to access controls.
+
+## [Demo](https://console.aws.amazon.com/amplify/home?region=us-east-1#/dhwrt40e0f9k0)
 
 ## Project setup
 ```
