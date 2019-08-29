@@ -17,6 +17,11 @@
           {{timerDisplay}}
         </p>
 
+        <p class="text-center grey--text lighten-2--text"
+        >
+          Elapsed Time: {{elapsedDisplay}}
+        </p>
+
         <v-row justify="center">
           <v-dialog v-model="settings" persistent max-width="300px">
             <v-card>
@@ -114,16 +119,25 @@ export default {
     startTimer() {
       this.timerStarted = true;
       this.updateTimer();
+      if (this.timer) {
+        window.clearInterval(this.timer);
+        this.timer = null;
+      }
       this.timer = setInterval(this.updateTimer, 1000);
     },
     stopTimer() {
-      window.clearInterval(this.timer);
-      this.timer = null;
       this.totalSeconds -= 1;
+      if (this.timer) {
+        window.clearInterval(this.timer);
+        this.timer = null;
+      }
+      this.timer = setInterval(this.updateElapsedTimer, 1000);
     },
     updateCountdown() {
       this.timerDisplay = this.countdownSeconds;
       this.countdownSeconds -= 1;
+
+      if (!this.firstCountdown) { this.updateElapsedTimer(); }
 
       if (this.countdownSeconds < 0) {
         window.clearInterval(this.timer);
@@ -132,33 +146,39 @@ export default {
         this.timerStarted = true;
         if (this.soundOn) { start.play(); }
         this.startTimer();
+        this.firstCountdown = false;
       } else if (this.soundOn) {
         beep.play();
       }
     },
-    updateTimer() {
-      this.timerDisplay = `${this.getHours()}:${this.getMinutes()}:${this.getSeconds()}`;
-      this.totalSeconds += 1;
+    updateElapsedTimer() {
+      this.elapsedDisplay = `${this.getHours(this.elapsedSeconds)}:${this.getMinutes(this.elapsedSeconds)}:${this.getSeconds(this.elapsedSeconds)}`;
+      this.elapsedSeconds += 1;
     },
-    getSeconds() {
+    updateTimer() {
+      this.timerDisplay = `${this.getHours(this.totalSeconds)}:${this.getMinutes(this.totalSeconds)}:${this.getSeconds(this.totalSeconds)}`;
+      this.totalSeconds += 1;
+      this.updateElapsedTimer();
+    },
+    getSeconds(seconds) {
       /*
         return seconds portion 00:00:ss
       */
-      const sec = this.totalSeconds % 60;
+      const sec = seconds % 60;
       return sec >= 10 ? sec : `0${sec}`;
     },
-    getMinutes() {
+    getMinutes(seconds) {
       /*
         return minutes portion 00:mm:00
       */
-      const min = Math.floor((this.totalSeconds / 60) % 60);
+      const min = Math.floor((seconds / 60) % 60);
       return min >= 10 ? min : `0${min}`;
     },
-    getHours() {
+    getHours(seconds) {
       /*
         return hours portion hh:00:00
       */
-      const hrs = Math.floor(this.totalSeconds / 60 / 60);
+      const hrs = Math.floor(seconds / 60 / 60);
       return hrs >= 10 ? hrs : `0${hrs}`;
     },
     saveSettings() {
@@ -190,7 +210,10 @@ export default {
   data: () => ({
     timer: 0,
     totalSeconds: 0,
+    elapsedSeconds: 0,
+    firstCountdown: true,
     timerDisplay: '00:00:00',
+    elapsedDisplay: '00:00:00',
     timerStarted: false,
     countdown: 3,
     countdownSeconds: 0,
