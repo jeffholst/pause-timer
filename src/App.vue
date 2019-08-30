@@ -22,6 +22,16 @@
           Elapsed Time: {{elapsedDisplay}}
         </p>
 
+        <v-row class="text-center">
+          <v-col cols="12">
+            <ol class="splits" id="splits">
+              <li v-for="split in splits" v-bind:key="split.id">
+                {{ split.id}} - {{ split.time }}
+              </li>
+            </ol>
+          </v-col>
+        </v-row>
+
         <v-row justify="center">
           <v-dialog v-model="settings" persistent max-width="300px">
             <v-card>
@@ -132,6 +142,10 @@ export default {
         this.timer = null;
       }
       this.timer = setInterval(this.updateElapsedTimer, 1000);
+
+      const t = `${this.getHours(this.totalSeconds)}:${this.getMinutes(this.totalSeconds)}:${this.getSeconds(this.totalSeconds)}`;
+
+      this.splits.push({ id: this.splits.length + 1, time: t });
     },
     updateCountdown() {
       this.timerDisplay = this.countdownSeconds;
@@ -208,6 +222,7 @@ export default {
     self.loadSettings();
   },
   data: () => ({
+    splits: [],
     timer: 0,
     totalSeconds: 0,
     elapsedSeconds: 0,
@@ -232,3 +247,9 @@ export default {
   }),
 };
 </script>
+
+<style scoped>
+.splits {
+  list-style-type: none
+}
+</style>
