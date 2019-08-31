@@ -84,11 +84,19 @@
     <v-bottom-navigation
     color="deep-purple accent-4"
     >
+    <v-btn @click="subtractSecond();"
+      v-show="!timerStarted"
+    >
+      <v-icon>mdi-minus</v-icon>
+    </v-btn>
     <v-btn @click="settings = true">
-      <span>Settings</span>
       <v-icon>mdi-settings</v-icon>
     </v-btn>
-
+    <v-btn  @click="addSecond();"
+      v-show="!timerStarted"
+    >
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
   </v-bottom-navigation>
   </v-app>
 </template>
@@ -212,6 +220,16 @@ export default {
         this.countdown = obj.countdown;
         this.displaySizeSelected = obj.displaySize;
       }
+    },
+    subtractSecond() {
+      if (this.totalSeconds > 0) {
+        this.totalSeconds += -1;
+        this.timerDisplay = `${this.getHours(this.totalSeconds)}:${this.getMinutes(this.totalSeconds)}:${this.getSeconds(this.totalSeconds)}`;
+      }
+    },
+    addSecond() {
+      this.totalSeconds += 1;
+      this.timerDisplay = `${this.getHours(this.totalSeconds)}:${this.getMinutes(this.totalSeconds)}:${this.getSeconds(this.totalSeconds)}`;
     },
   },
   mounted() {
