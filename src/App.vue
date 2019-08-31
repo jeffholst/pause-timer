@@ -50,12 +50,14 @@
                   </v-row>
                   <v-row>
                     <v-col cols="12">
-                      <v-select
-                        v-model="countdownSelected"
-                        :items='countdownItems'
-                        label='Countdown Seconds'
-                        @change="countdown = countdownSelected"
-                      ></v-select>
+                      <v-slider
+                        v-model="countdown"
+                        thumb-label="always"
+                        min=0
+                        max=10
+                        step="1"
+                        label="Countdown"
+                      ></v-slider>
                     </v-col>
                   </v-row>
                   <v-row>
@@ -207,7 +209,6 @@ export default {
       if (localStorage.pauseTimer) {
         const obj = JSON.parse(localStorage.pauseTimer);
         this.soundOn = obj.sound;
-        this.countdownSelected = obj.countdown;
         this.countdown = obj.countdown;
         this.displaySizeSelected = obj.displaySize;
       }
@@ -236,8 +237,6 @@ export default {
     settings: false,
     soundOn: false,
     mini: true,
-    countdownSelected: 3,
-    countdownItems: ['5', '4', '3', '2', '1', '0'],
     displaySizeSelected: 4,
     displaySizeItems: [
       { text: 'Large', value: 4 },
