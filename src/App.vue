@@ -9,9 +9,9 @@
 
         <p class="text-center font-weight-black"
           v-bind:class="[{ 'red--text': !timerStarted},
-            {'display-4': displaySizeSelected == '4'},
-            {'display-3': displaySizeSelected == '3'},
-            {'display-2': displaySizeSelected == '2'},
+            {'display-4': displaySizeSelected == '3'},
+            {'display-3': displaySizeSelected == '2'},
+            {'display-2': displaySizeSelected == '1'},
             ]"
         >
           {{timerDisplay}}
@@ -44,30 +44,63 @@
                     <v-col cols="12">
                       <v-switch
                         v-model="soundOn"
-                        :label="`Sound: ${soundOn.toString()}`"
-                      ></v-switch>
+                      >
+                        <v-tooltip slot="prepend" bottom>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on">mdi-alarm-note</v-icon>
+                          </template>
+                          <span>Sound</span>
+                        </v-tooltip>
+                      </v-switch>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="12">
                       <v-slider
+                        ticks
                         v-model="countdown"
                         thumb-label="always"
                         min=0
                         max=10
                         step="1"
-                        label="Countdown"
-                      ></v-slider>
+                      >
+                         <v-tooltip slot="prepend" bottom>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on">mdi-timer-off</v-icon>
+                          </template>
+                          <span>Countdown</span>
+                        </v-tooltip>
+                        <v-tooltip slot="append" bottom>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on">mdi-timer</v-icon>
+                          </template>
+                          <span>Countdown</span>
+                        </v-tooltip>
+                      </v-slider>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="12">
-                      <v-select
+                      <v-slider
+                        ticks
                         v-model="displaySizeSelected"
-                        :items='displaySizeItems'
-                        label='Display Size'
-                        @change="countdown = countdownSelected"
-                      ></v-select>
+                        min=1
+                        max=3
+                        step="1"
+                      >
+                        <v-tooltip slot="prepend" bottom>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on">mdi-format-font-size-decrease</v-icon>
+                          </template>
+                          <span>Display</span>
+                        </v-tooltip>
+                        <v-tooltip slot="append" bottom>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on">mdi-format-font-size-increase</v-icon>
+                          </template>
+                          <span>Display</span>
+                        </v-tooltip>
+                      </v-slider>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -255,12 +288,7 @@ export default {
     settings: false,
     soundOn: false,
     mini: true,
-    displaySizeSelected: 4,
-    displaySizeItems: [
-      { text: 'Large', value: 4 },
-      { text: 'Medium', value: 3 },
-      { text: 'Small', value: 2 },
-    ],
+    displaySizeSelected: 3,
   }),
 };
 </script>
