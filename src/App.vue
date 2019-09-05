@@ -180,6 +180,7 @@ import NoSleep from 'nosleep.js';
 const noSleep = new NoSleep();
 const beep = new Audio(require('./assets/beep.wav')); // eslint-disable-line global-require
 const start = new Audio(require('./assets/start.mp3')); // eslint-disable-line global-require
+const alarm = new Audio(require('./assets/alarm.mp3')); // eslint-disable-line global-require
 
 export default {
   name: 'App',
@@ -250,10 +251,17 @@ export default {
     },
     updateElapsedTimer() {
       this.elapsedDisplay = `${this.getHours(this.elapsedSeconds)}:${this.getMinutes(this.elapsedSeconds)}:${this.getSeconds(this.elapsedSeconds)}`;
+
       this.elapsedSeconds += 1;
     },
     updateTimer() {
       this.timerDisplay = `${this.getHours(this.totalSeconds)}:${this.getMinutes(this.totalSeconds)}:${this.getSeconds(this.totalSeconds)}`;
+
+      if (this.duration !== '00:00:00' && this.duration === this.timerDisplay) {
+        alarm.play();
+        this.stopTimer();
+      }
+
       this.totalSeconds += 1;
       this.updateElapsedTimer();
     },
@@ -294,15 +302,20 @@ export default {
         this.displaySizeSelected = obj.displaySize;
       }
     },
+    adjustLastSplit(tDisplay) {
+      this.splits[this.splits.length - 1].time = tDisplay;
+    },
     subtractSecond() {
       if (this.totalSeconds > 0) {
         this.totalSeconds += -1;
         this.timerDisplay = `${this.getHours(this.totalSeconds)}:${this.getMinutes(this.totalSeconds)}:${this.getSeconds(this.totalSeconds)}`;
+        this.adjustLastSplit(this.timerDisplay);
       }
     },
     addSecond() {
       this.totalSeconds += 1;
       this.timerDisplay = `${this.getHours(this.totalSeconds)}:${this.getMinutes(this.totalSeconds)}:${this.getSeconds(this.totalSeconds)}`;
+      this.adjustLastSplit(this.timerDisplay);
     },
   },
   mounted() {
