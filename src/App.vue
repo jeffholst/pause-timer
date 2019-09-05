@@ -103,6 +103,46 @@
                       </v-slider>
                     </v-col>
                   </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                     <v-dialog
+                        ref="dialog"
+                        v-model="showDurationDialog"
+                        :return-value.sync="duration"
+                        persistent
+                        full-width
+                        width="290px"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="duration"
+                            label="Duration"
+                            prepend-icon="mdi-alarm"
+                            readonly
+                            v-on="on"
+                          ></v-text-field>
+                        </template>
+                        <v-time-picker
+                          v-if="showDurationDialog"
+                          v-model="duration"
+                          format="24hr"
+                          :allowed-hours="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
+                          full-width
+                          use-seconds
+                        >
+                          <div class="flex-grow-1"></div>
+                          <v-btn text color="primary"
+                            @click="showDurationDialog = false">
+                            Cancel
+                          </v-btn>
+                          <v-btn text color="primary"
+                            @click="$refs.dialog.save(duration)">
+                            OK
+                          </v-btn>
+                        </v-time-picker>
+                      </v-dialog>
+                    </v-col>
+                  </v-row>
                 </v-container>
               </v-card-text>
               <v-card-actions>
@@ -289,6 +329,8 @@ export default {
     soundOn: false,
     mini: true,
     displaySizeSelected: 3,
+    duration: '00:00:00',
+    showDurationDialog: false,
   }),
 };
 </script>
