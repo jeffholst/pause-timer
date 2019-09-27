@@ -245,6 +245,13 @@ export default {
 
       this.splits.push({ id: this.splits.length + 1, time: t });
     },
+    stopTimer() {
+      this.timerStarted = false;
+      if (this.timer) {
+        window.clearInterval(this.timer);
+        this.timer = null;
+      }
+    },
     updateCountdown() {
       this.timerDisplay = this.countdownSeconds;
       this.countdownSeconds -= 1;
@@ -276,14 +283,14 @@ export default {
       if (!this.countDownTimer) {
         if (this.duration !== '00:00:00' && this.duration === this.timerDisplay) {
           alarm.play();
-          this.pauseTimer();
+          this.stopTimer();
         } else {
           this.totalSeconds += 1;
         }
       } else {
         if (this.totalSeconds === 0) { // eslint-disable-line no-lonely-if
           alarm.play();
-          this.pauseTimer();
+          this.stopTimer();
         } else {
           this.totalSeconds -= 1;
         }
@@ -340,7 +347,8 @@ export default {
       obj.countDownTimer = this.countDownTimer;
       localStorage.pauseTimer = JSON.stringify(obj);
       if (this.countDownTimer) {
-        this.totalSeconds = 45; // JKH TODO
+        const a = this.duration.split(':');
+        this.totalSeconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
         this.timerDisplay = this.duration;
       } else {
         this.totalSeconds = 0;
