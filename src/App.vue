@@ -8,7 +8,9 @@
       <v-container fluid>
 
         <p class="text-center font-weight-black"
-          v-bind:class="[{ 'red--text': !timerStarted},
+          v-bind:class="[{'red--text': timerStatus === 2},
+            {'purple--text': timerStatus === 0},
+            {'orange--text': timerStatus === 3},
             {'display-4': displaySizeSelected == '3'},
             {'display-3': displaySizeSelected == '2'},
             {'display-2': displaySizeSelected == '1'},
@@ -172,7 +174,7 @@
     color="deep-purple accent-4"
     >
     <v-btn @click="subtractSecond();"
-      v-show="!timerStarted"
+      v-show="timerStatus === 2"
     >
       <v-icon>mdi-minus</v-icon>
     </v-btn>
@@ -180,7 +182,7 @@
       <v-icon>mdi-settings</v-icon>
     </v-btn>
     <v-btn  @click="addSecond();"
-      v-show="!timerStarted"
+      v-show="!timerStatus ===2"
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
@@ -194,14 +196,14 @@ import NoSleep from 'nosleep.js';
 const noSleep = new NoSleep();
 const beep = new Audio(require('./assets/beep.wav')); // eslint-disable-line global-require
 const start = new Audio(require('./assets/start.mp3')); // eslint-disable-line global-require
-const alarm = new Audio(require('./assets/alarm.mp3')); // eslint-disable-line global-require
+const alarm = new Audio(require('./assets/tada.mp3')); // eslint-disable-line global-require
 
 export default {
   name: 'App',
   methods: {
     mouseClicked() {
-      if (this.timerStarted) {
-        this.timerStarted = false;
+      if (this.timerStatus === 1) {
+        this.timerStatus = 2;
         this.pauseTimer();
         noSleep.disable();
       } else {
@@ -210,6 +212,7 @@ export default {
           this.timer = null;
         }
 
+        this.timerStatus = 3;
         this.startCountdown();
         noSleep.enable();
       }
@@ -225,7 +228,7 @@ export default {
       }
     },
     startTimer() {
-      this.timerStarted = true;
+      this.timerStatus = 1;
       this.updateTimer();
       if (this.timer) {
         window.clearInterval(this.timer);
@@ -246,7 +249,7 @@ export default {
       this.splits.push({ id: this.splits.length + 1, time: t });
     },
     stopTimer() {
-      this.timerStarted = false;
+      this.timerStatus = 0;
       if (this.timer) {
         window.clearInterval(this.timer);
         this.timer = null;
@@ -262,7 +265,7 @@ export default {
         window.clearInterval(this.timer);
         this.timer = null;
         this.countdownStarted = false;
-        this.timerStarted = true;
+        this.timerStatus = 1;
         if (this.soundOn) { start.play(); }
         this.startTimer();
         this.firstCountdown = false;
@@ -320,7 +323,7 @@ export default {
       return hrs >= 10 ? hrs : `0${hrs}`;
     },
     openSettingsDialog() {
-      this.timerStarted = false;
+      this.timerStatus = 0;
       this.firstCountdown = true;
       this.elapsedTimer = '00:00:00';
       this.elapsedSeconds = 0;
@@ -398,7 +401,7 @@ export default {
     firstCountdown: true,
     timerDisplay: '00:00:00',
     elapsedDisplay: '00:00:00',
-    timerStarted: false,
+    timerStatus: 0, // 0 = stopped, 1 = running, 2 = paused, 3 = countdown
     countdown: 3,
     countdownSeconds: 0,
     coutdownStarted: false,
