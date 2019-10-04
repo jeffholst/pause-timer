@@ -159,6 +159,11 @@
                       </v-switch>
                     </v-col>
                   </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                      Version 1.0
+                    </v-col>
+                  </v-row>
                 </v-container>
               </v-card-text>
               <v-card-actions>
@@ -202,6 +207,7 @@ export default {
   name: 'App',
   methods: {
     mouseClicked() {
+      // 0 = stopped, 1 = running, 2 = paused, 3 = countdown
       if (this.timerStatus === 1) {
         this.timerStatus = 2;
         this.pauseTimer();
@@ -210,8 +216,9 @@ export default {
         if (this.timer) {
           window.clearInterval(this.timer);
           this.timer = null;
+        } else {
+          this.resetTimer();
         }
-
         this.timerStatus = 3;
         this.startCountdown();
         noSleep.enable();
@@ -237,7 +244,11 @@ export default {
       this.timer = setInterval(this.updateTimer, 1000);
     },
     pauseTimer() {
-      this.totalSeconds -= 1;
+      if (!this.countDownTimer) {
+        this.totalSeconds -= 1;
+      } else {
+        this.totalSeconds += 1;
+      }
       if (this.timer) {
         window.clearInterval(this.timer);
         this.timer = null;
@@ -349,6 +360,10 @@ export default {
       obj.duration = this.duration;
       obj.countDownTimer = this.countDownTimer;
       localStorage.pauseTimer = JSON.stringify(obj);
+      this.resetTimer();
+      this.settings = false;
+    },
+    resetTimer() {
       if (this.countDownTimer) {
         const a = this.duration.split(':');
         this.totalSeconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
@@ -357,7 +372,11 @@ export default {
         this.totalSeconds = 0;
         this.timerDisplay = '00:00:00';
       }
-      this.settings = false;
+      this.elapsedTimer = '00:00:00';
+      this.elapsedSeconds = 0;
+      this.updateElapsedDisplay();
+      this.splits = [];
+      this.firstCountdown = true;
     },
     loadSettings() {
       if (localStorage.pauseTimer) {
@@ -392,6 +411,7 @@ export default {
       self.mouseClicked();
     });
     self.loadSettings();
+    self.resetTimer();
   },
   data: () => ({
     splits: [],
