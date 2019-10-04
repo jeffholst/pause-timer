@@ -24,6 +24,16 @@
           Elapsed Time: {{elapsedDisplay}}
         </p>
 
+        <p class="text-center grey--text lighten-2--text body-2"
+        >
+          {{statusDisplay}}
+        </p>
+
+        <p class="text-center grey--text lighten-2--text body-2"
+        >
+          {{tapDisplay}}
+        </p>
+
         <v-row class="text-center">
           <v-col cols="12">
             <ol class="splits" id="splits">
@@ -161,7 +171,7 @@
                   </v-row>
                   <v-row>
                     <v-col cols="12">
-                      Version 1.0
+                      Version 0.0.2
                     </v-col>
                   </v-row>
                 </v-container>
@@ -209,7 +219,7 @@ export default {
     mouseClicked() {
       // 0 = stopped, 1 = running, 2 = paused, 3 = countdown
       if (this.timerStatus === 1) {
-        this.timerStatus = 2;
+        this.setTimerStatus(2);
         this.pauseTimer();
         noSleep.disable();
       } else {
@@ -219,9 +229,35 @@ export default {
         } else {
           this.resetTimer();
         }
-        this.timerStatus = 3;
+        this.setTimerStatus(3);
         this.startCountdown();
         noSleep.enable();
+      }
+    },
+    setTimerStatus(status) {
+      this.timerStatus = status;
+
+      switch (status) {
+        case 0: // stopped
+          this.statusDisplay = 'stopped';
+          this.tapDisplay = 'tap to start';
+          break;
+        case 1: // running
+          this.statusDisplay = 'running';
+          this.tapDisplay = 'tap to pause';
+          break;
+        case 2: // paused
+          this.statusDisplay = 'paused';
+          this.tapDisplay = 'tap to continue';
+          break;
+        case 3: // countdown
+          this.statusDisplay = 'countdown';
+          this.tapDisplay = '';
+          break;
+        default:
+          this.statusDisplay = '';
+          this.tapDisplay = '';
+          break;
       }
     },
     startCountdown() {
@@ -235,7 +271,7 @@ export default {
       }
     },
     startTimer() {
-      this.timerStatus = 1;
+      this.setTimerStatus(1);
       this.updateTimer();
       if (this.timer) {
         window.clearInterval(this.timer);
@@ -260,7 +296,7 @@ export default {
       this.splits.push({ id: this.splits.length + 1, time: t });
     },
     stopTimer() {
-      this.timerStatus = 0;
+      this.setTimerStatus(0);
       if (this.timer) {
         window.clearInterval(this.timer);
         this.timer = null;
@@ -276,7 +312,7 @@ export default {
         window.clearInterval(this.timer);
         this.timer = null;
         this.countdownStarted = false;
-        this.timerStatus = 1;
+        this.setTimerStatus(1);
         if (this.soundOn) { start.play(); }
         this.startTimer();
         this.firstCountdown = false;
@@ -334,7 +370,7 @@ export default {
       return hrs >= 10 ? hrs : `0${hrs}`;
     },
     openSettingsDialog() {
-      this.timerStatus = 0;
+      this.setTimerStatus(0);
       this.firstCountdown = true;
       this.elapsedTimer = '00:00:00';
       this.elapsedSeconds = 0;
@@ -432,6 +468,8 @@ export default {
     duration: '00:00:00',
     showDurationDialog: false,
     countDownTimer: false,
+    statusDisplay: 'stopped',
+    tapDisplay: 'click to start',
   }),
 };
 </script>
