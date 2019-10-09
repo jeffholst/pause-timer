@@ -197,7 +197,7 @@
       <v-icon>mdi-settings</v-icon>
     </v-btn>
     <v-btn  @click="addSecond();"
-      v-show="!timerStatus ===2"
+      v-show="timerStatus === 2"
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
@@ -211,7 +211,7 @@ import NoSleep from 'nosleep.js';
 const noSleep = new NoSleep();
 const beep = new Audio(require('./assets/beep.wav')); // eslint-disable-line global-require
 const start = new Audio(require('./assets/start.mp3')); // eslint-disable-line global-require
-const alarm = new Audio(require('./assets/tada.mp3')); // eslint-disable-line global-require
+const alarm = new Audio(require('./assets/alarm.mp3')); // eslint-disable-line global-require
 
 export default {
   name: 'App',
@@ -400,9 +400,11 @@ export default {
       this.settings = false;
     },
     resetTimer() {
+      const a = this.duration.split(':');
+      this.durationSeconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+
       if (this.countDownTimer) {
-        const a = this.duration.split(':');
-        this.totalSeconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+        this.totalSeconds = this.durationSeconds;
         this.timerDisplay = this.duration;
       } else {
         this.totalSeconds = 0;
@@ -435,9 +437,12 @@ export default {
       }
     },
     addSecond() {
-      this.totalSeconds += 1;
-      this.timerDisplay = `${this.getHours(this.totalSeconds)}:${this.getMinutes(this.totalSeconds)}:${this.getSeconds(this.totalSeconds)}`;
-      this.adjustLastSplit(this.timerDisplay);
+        console.log(this.durationSeconds);
+        if (this.countDownTimer || this.totalSeconds < this.durationSeconds) {
+        this.totalSeconds += 1;
+        this.timerDisplay = `${this.getHours(this.totalSeconds)}:${this.getMinutes(this.totalSeconds)}:${this.getSeconds(this.totalSeconds)}`;
+        this.adjustLastSplit(this.timerDisplay);
+      }
     },
   },
   mounted() {
@@ -466,6 +471,7 @@ export default {
     mini: true,
     displaySizeSelected: 3,
     duration: '00:00:00',
+    durationSeconds: 0,
     showDurationDialog: false,
     countDownTimer: false,
     statusDisplay: 'stopped',
